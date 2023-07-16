@@ -9,6 +9,7 @@ import Image from "next/image";
 import { LoadingPage, LoadingSpinner } from "~/components/LoadingSpinner";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import Link from "next/link";
 
 const CreatePost = () => {
   const { user } = useUser();
@@ -22,12 +23,12 @@ const CreatePost = () => {
       void ctx.posts.getAll.invalidate();
     },
     onError: (err) => {
-      const errorMessage = err.data?.zodError?.fieldErrors.content;
-      if (errorMessage && errorMessage[0]) {
-        toast.error(errorMessage[0]);
+      const errorMessage = err.data?.zodError?.fieldErrors?.content?.[0];
+      if (!errorMessage) {
+        toast.error("Failed to create post.");
         return;
       }
-      toast.error("Failed to create post.");
+      toast.error(errorMessage);
     },
   });
   if (!user) return null;
@@ -84,10 +85,14 @@ const PostView = (props: PostWithUser) => {
       />
       <div className="flex flex-col">
         <div className="flex gap-1">
-          <span>{`@${author.username}`}</span>
-          <span className="font-thin">{`· ${dayjs(
-            post.createdAt
-          ).fromNow()}`}</span>
+          <Link href={`/@${author.username}`}>
+            <span>{`@${author.username}`}</span>
+          </Link>
+          <Link href={`/post/${post.id}}`}>
+            <span className="font-thin">{`· ${dayjs(
+              post.createdAt
+            ).fromNow()}`}</span>
+          </Link>
         </div>
         <span>{post.content}</span>
       </div>
