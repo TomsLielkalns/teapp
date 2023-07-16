@@ -3,9 +3,8 @@ import { api } from "~/utils/api";
 import { SignOutButton, SignInButton, useUser } from "@clerk/nextjs";
 
 const Home = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
-
   const user = useUser();
+  const { data } = api.posts.getAll.useQuery();
 
   return (
     <>
@@ -18,6 +17,11 @@ const Home = () => {
         <div>
           {!user.isSignedIn && <SignInButton />}
           {user.isSignedIn && <SignOutButton />}
+        </div>
+        <div>
+          {data?.map((post) => (
+            <div key={post.id}>{post.content}</div>
+          ))}
         </div>
       </main>
     </>
