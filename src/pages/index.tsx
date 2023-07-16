@@ -85,7 +85,7 @@ const PostView = (props: PostWithUser) => {
       />
       <div className="flex flex-col">
         <div className="flex gap-1">
-          <Link href={`/@${author.username}`}>
+          <Link href={`/${author.id}`}>
             <span>{`@${author.username}`}</span>
           </Link>
           <Link href={`/post/${post.id}}`}>
