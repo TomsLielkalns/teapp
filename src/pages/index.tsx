@@ -7,9 +7,20 @@ dayjs.extend(relativeTime);
 
 import Image from "next/image";
 import { LoadingPage } from "~/components/LoadingSpinner";
+import { useState } from "react";
 
 const CreatePost = () => {
   const { user } = useUser();
+
+  const [input, setInput] = useState("");
+
+  const ctx = api.useContext();
+  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
+    onSuccess: () => {
+      setInput("");
+      void ctx.posts.getAll.invalidate();
+    },
+  });
   if (!user) return null;
   return (
     <>
@@ -24,7 +35,12 @@ const CreatePost = () => {
         <input
           placeholder="Write something."
           className="grow bg-transparent outline-none"
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          disabled={isPosting}
         />
+        <button onClick={() => mutate({ content: input })}>Post</button>
       </div>
     </>
   );
@@ -66,7 +82,7 @@ const Feed = () => {
   if (!data) return <div>Failed to load data</div>;
   return (
     <div className="flex grow flex-col">
-      {[...data, ...data]?.map((postWithAuthor) => (
+      {data.map((postWithAuthor) => (
         <PostView {...postWithAuthor} key={postWithAuthor.post.id} />
       ))}
     </div>
