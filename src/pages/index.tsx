@@ -6,7 +6,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
 import Image from "next/image";
-import { LoadingPage } from "~/components/loadingSpinner";
+import { LoadingPage } from "~/components/LoadingSpinner";
 
 const CreatePost = () => {
   const { user } = useUser();
