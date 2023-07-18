@@ -4,7 +4,9 @@ export const filterUsersForClient = (user: User) => {
   //google sso doesnt have username
   let username = user.username;
   if (!username) {
-    username = user.firstName ?? user.lastName ?? "Anonymous";
+    if (user.firstName && user.lastName)
+      username = `${user.firstName} ${user.lastName}`;
+    else username = user.firstName ?? user.lastName ?? "Anonymous";
   }
 
   return {
