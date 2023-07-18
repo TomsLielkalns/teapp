@@ -6,6 +6,7 @@ import superjson from "superjson";
 import { prisma } from "~/server/db";
 import { type GetStaticProps } from "next";
 import { PageLayout } from "~/components/layout";
+import Image from "next/image";
 
 const ProfilePage = (props: { userId: string }) => {
   const { userId } = props;
@@ -19,7 +20,18 @@ const ProfilePage = (props: { userId: string }) => {
         <title>{data.username}</title>
       </Head>
       <PageLayout>
-        <div>{data.username}</div>
+        <div className="relative h-48 border-slate-400 bg-slate-600">
+          <Image
+            src={data.profileImageUrl}
+            alt={`${data.username}'s profile image`}
+            width={150}
+            height={150}
+            className="absolute bottom-0 left-0 -mb-[75px] ml-4 rounded-full border-4 border-black"
+          />
+        </div>
+        <div className="h-[75px]" />
+        <div className="p-4 text-2xl font-bold">{`@${data.username}`}</div>
+        <div className="border-b border-slate-400" />
       </PageLayout>
     </>
   );
