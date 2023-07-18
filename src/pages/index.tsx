@@ -10,6 +10,7 @@ import { LoadingPage, LoadingSpinner } from "~/components/LoadingSpinner";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
+import { PageLayout } from "~/components/layout";
 
 const CreatePost = () => {
   const { user } = useUser();
@@ -127,20 +128,18 @@ const Home = () => {
 
   return (
     <>
-      <main className="flex justify-center">
-        <div className="h-screen w-full border-x border-slate-300 md:max-w-2xl">
-          <div className="flex justify-between border-b border-slate-300 p-4">
-            {!isSignedIn && <SignInButton />}
-            {isSignedIn && (
-              <>
-                <CreatePost />
-                <SignOutButton />
-              </>
-            )}
-          </div>
-          <Feed />
+      <PageLayout>
+        <div className="flex justify-between border-b border-slate-300 p-4">
+          {!isSignedIn && <SignInButton />}
+          {isSignedIn && (
+            <>
+              <CreatePost />
+              <SignOutButton />
+            </>
+          )}
         </div>
-      </main>
+        <Feed />
+      </PageLayout>
     </>
   );
 };

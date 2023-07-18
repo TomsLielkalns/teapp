@@ -5,6 +5,7 @@ import { appRouter } from "~/server/api/root";
 import superjson from "superjson";
 import { prisma } from "~/server/db";
 import { type GetStaticProps } from "next";
+import { PageLayout } from "~/components/layout";
 
 const ProfilePage = (props: { userId: string }) => {
   const { userId } = props;
@@ -15,15 +16,11 @@ const ProfilePage = (props: { userId: string }) => {
   return (
     <>
       <Head>
-        <title>Profile</title>
+        <title>{data.username}</title>
       </Head>
-      <main className="flex justify-center">
-        <div className="h-screen w-full border-x border-slate-300 md:max-w-2xl">
-          <div className="flex justify-between border-b border-slate-300 p-4">
-            <div>{data.username}</div>
-          </div>
-        </div>
-      </main>
+      <PageLayout>
+        <div>{data.username}</div>
+      </PageLayout>
     </>
   );
 };
