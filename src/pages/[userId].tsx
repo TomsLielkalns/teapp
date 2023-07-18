@@ -5,8 +5,30 @@ import { appRouter } from "~/server/api/root";
 import superjson from "superjson";
 import { prisma } from "~/server/db";
 import { type GetStaticProps } from "next";
-import { PageLayout } from "~/components/layout";
+import { PageLayout } from "~/components/Layout";
 import Image from "next/image";
+import { LoadingPage } from "~/components/LoadingSpinner";
+import { PostView } from "~/components/PostView";
+
+const ProfileFeed = (props: { authorId: string }) => {
+  const { authorId } = props;
+  const { data, isLoading } = api.posts.getPostsByAuthorId.useQuery({
+    authorId,
+  });
+
+  if (isLoading) return <LoadingPage />;
+  if (!data || data.length === 0) return <div>User has not posted yet.</div>;
+
+  return (
+    <>
+      <div className="flex flex-col">
+        {data.map((fullPost) => (
+          <PostView key={fullPost.post.id} {...fullPost} />
+        ))}
+      </div>
+    </>
+  );
+};
 
 const ProfilePage = (props: { userId: string }) => {
   const { userId } = props;
@@ -32,6 +54,7 @@ const ProfilePage = (props: { userId: string }) => {
         <div className="h-[75px]" />
         <div className="p-4 text-2xl font-bold">{`@${data.username}`}</div>
         <div className="border-b border-slate-400" />
+        <ProfileFeed authorId={userId} />
       </PageLayout>
     </>
   );
