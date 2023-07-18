@@ -6,12 +6,11 @@ import superjson from "superjson";
 import { prisma } from "~/server/db";
 import { type GetStaticProps } from "next";
 
-const ProfilePage = () => {
-  const { data, isLoading } = api.profile.getUserByUserId.useQuery({
-    userId: "user_2SdCmZ3hkfm52DJkbOkg1yMcKUe",
+const ProfilePage = (props: { userId: string }) => {
+  const { userId } = props;
+  const { data } = api.profile.getUserByUserId.useQuery({
+    userId,
   });
-
-  if (isLoading) return <div>Loading...</div>;
   if (!data) return <div>Failed to load data</div>;
   return (
     <>
@@ -36,15 +35,15 @@ export const getStaticProps: GetStaticProps = async (context) => {
     transformer: superjson,
   });
 
-  const slug = context.params?.slug;
+  const userId = context.params?.userId;
 
-  if (typeof slug !== "string") throw new Error("slug is not a string");
+  if (typeof userId !== "string") throw new Error("slug is not a string");
 
-  await ssg.profile.getUserByUserId.prefetch({ userId: slug });
-
+  await ssg.profile.getUserByUserId.prefetch({ userId: userId });
   return {
     props: {
       trpcState: ssg.dehydrate(),
+      userId,
     },
   };
 };
