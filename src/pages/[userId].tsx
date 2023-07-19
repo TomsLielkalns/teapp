@@ -69,7 +69,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
   const userId = context.params?.userId;
 
-  if (typeof userId !== "string") throw new Error("slug is not a string");
+  if (typeof userId !== "string") throw new Error("userID is not a string");
 
   await ssg.profile.getUserByUserId.prefetch({ userId: userId });
   return {
