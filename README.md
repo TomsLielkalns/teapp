@@ -10,6 +10,6 @@
 ## Deployed on:
 - Vercel for CI pipeline
 - PlanetScale for DB
-- Clerk for user login/SSO
+- Clerk for user login/management
 - Upstash for cache
 - Axiom for logs
