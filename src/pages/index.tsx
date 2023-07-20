@@ -2,20 +2,23 @@ import { api } from "~/utils/api";
 import { SignOutButton, SignInButton, useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import { LoadingPage, LoadingSpinner } from "~/components/LoadingSpinner";
-import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { PageLayout } from "~/components/Layout";
 import { PostView } from "~/components/PostView";
+import { useForm, type SubmitHandler } from "react-hook-form";
+
+type PostFormValues = {
+  postContent: string;
+};
 
 const CreatePost = () => {
   const { user } = useUser();
-
-  const [input, setInput] = useState("");
+  const { register, handleSubmit, formState, reset } =
+    useForm<PostFormValues>();
 
   const ctx = api.useContext();
   const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
     onSuccess: () => {
-      setInput("");
       void ctx.posts.getAll.invalidate();
     },
     onError: (err) => {
@@ -28,6 +31,12 @@ const CreatePost = () => {
     },
   });
   if (!user) return null;
+
+  const onSubmitPost: SubmitHandler<PostFormValues> = ({ postContent }) => {
+    mutate({ content: postContent });
+    reset();
+  };
+
   return (
     <>
       <div className="flex w-full gap-4">
@@ -38,25 +47,28 @@ const CreatePost = () => {
           width={56}
           height={56}
         />
-        <input
-          placeholder="Write something."
-          className="grow bg-transparent outline-none"
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          disabled={isPosting}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              if (input !== "") {
-                mutate({ content: input });
+        <form
+          className="flex grow items-center"
+          onSubmit={handleSubmit(onSubmitPost)}
+        >
+          <input
+            {...register("postContent", { required: true })}
+            placeholder="Write something."
+            className="grow bg-transparent outline-none"
+            type="text"
+            id="postContent"
+            disabled={isPosting}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleSubmit(onSubmitPost);
               }
-            }
-          }}
-        />
-        {input !== "" && !isPosting && (
-          <button onClick={() => mutate({ content: input })}>Post</button>
-        )}
+            }}
+          />
+          {formState.isValid && !isPosting && (
+            <button onClick={() => handleSubmit(onSubmitPost)}>Post</button>
+          )}
+        </form>
         {isPosting && (
           <div className="flex items-center justify-center">
             <LoadingSpinner size={20} />
