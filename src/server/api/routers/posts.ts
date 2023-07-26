@@ -71,18 +71,14 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         limit: z.number().min(1).max(50).default(10),
-        cursor: z
-          .object({
-            id: z.string(),
-          })
-          .nullish(), // cursor is a reference to the last item in the previous batch
+        cursor: z.string().nullish(), // cursor is a unique reference to the last item in the previous batch
       })
     )
     .query(async ({ ctx, input }) => {
       const { limit, cursor } = input;
       const posts = await ctx.prisma.post.findMany({
         take: limit + 1,
-        cursor: cursor ? { id: cursor.id } : undefined,
+        cursor: cursor ? { id: cursor } : undefined,
         orderBy: [{ createdAt: "desc" }, { id: "asc" }],
       });
 
@@ -91,10 +87,10 @@ export const postsRouter = createTRPCRouter({
         const lastItem = posts.pop();
         if (!lastItem) {
           throw new Error(
-            "Unexpected error: last item is undefined, check if database has any posts"
+            "Unexpected error: lastItem is undefined, check if database has any posts"
           );
         }
-        nextCursor = { id: lastItem.id };
+        nextCursor = lastItem.id;
       }
       return {
         posts,
