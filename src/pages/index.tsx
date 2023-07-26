@@ -57,6 +57,7 @@ const CreatePost = () => {
             className="grow bg-transparent outline-none"
             type="text"
             id="postContent"
+            autoComplete="off"
             disabled={isPosting}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
