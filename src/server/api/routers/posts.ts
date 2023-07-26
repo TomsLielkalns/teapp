@@ -71,7 +71,8 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         limit: z.number().min(1).max(50).default(10),
-        cursor: z.string().nullish(), // cursor is a unique reference to the last item in the previous batch
+        // cursor is a unique reference to the last item in the previous batch in my case it's the id of the last item
+        cursor: z.string().nullish(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -92,8 +93,10 @@ export const postsRouter = createTRPCRouter({
         }
         nextCursor = lastItem.id;
       }
+
+      const postsWithAuthorData = await addAuthorDataToPosts(posts);
       return {
-        posts,
+        postsWithAuthorData,
         nextCursor,
       };
     }),
