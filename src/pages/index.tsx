@@ -6,6 +6,7 @@ import { toast } from "react-hot-toast";
 import { PageLayout } from "~/components/Layout";
 import { PostView } from "~/components/PostView";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { useCallback } from "react";
 
 type PostFormValues = {
   postContent: string;
@@ -57,6 +58,7 @@ const CreatePost = () => {
             className="grow bg-transparent outline-none"
             type="text"
             id="postContent"
+            autoComplete="off"
             disabled={isPosting}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -80,7 +82,45 @@ const CreatePost = () => {
 };
 
 const Feed = () => {
-  const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
+  const {
+    data,
+    isLoading: postsLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = api.posts.getAllInfinite.useInfiniteQuery(
+    {
+      limit: 10,
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      // initialCursor: 1, // <-- optional you can pass an initialCursor
+    }
+  );
+
+  // since useRef assigned loadMoreButtonRef.current to null before the button was rendered
+  // and also didnt update when the button was rendered, even AFTER using useLayoutEffect
+  // creating a ref via callback function fixed the issue
+  const loadMoreButtonRef = useCallback(
+    (node: HTMLButtonElement | null) => {
+      if (node && IntersectionObserver) {
+        const observer = new IntersectionObserver(
+          ([entry]) => {
+            if (entry && entry.isIntersecting) {
+              void fetchNextPage();
+            }
+          },
+          {
+            rootMargin: "0px",
+            threshold: 0.0,
+          }
+        );
+        observer.observe(node);
+      }
+    },
+    [fetchNextPage]
+  );
+
   if (postsLoading)
     return (
       <div className="flex grow">
@@ -88,19 +128,40 @@ const Feed = () => {
       </div>
     );
   if (!data) return <div>Failed to load data</div>;
+
   return (
     <div className="flex grow flex-col">
-      {data.map((postWithAuthor) => (
-        <PostView {...postWithAuthor} key={postWithAuthor.post.id} />
-      ))}
+      {data.pages.map((page, index) => {
+        return (
+          <div key={index}>
+            {page.postsWithAuthorData.map((postWithAuthor) => {
+              return (
+                <PostView {...postWithAuthor} key={postWithAuthor.post.id} />
+              );
+            })}
+          </div>
+        );
+      })}
+      {hasNextPage && (
+        <button
+          ref={loadMoreButtonRef}
+          onClick={() => fetchNextPage()}
+          disabled={isFetchingNextPage || !hasNextPage}
+          className="flex items-center justify-center"
+        >
+          {isFetchingNextPage
+            ? "Loading more..."
+            : hasNextPage
+            ? "Load More"
+            : "Nothing more to load"}
+        </button>
+      )}
     </div>
   );
 };
 
 const Home = () => {
   const { isLoaded: userLoaded, isSignedIn } = useUser();
-  // start fetching asap
-  api.posts.getAll.useQuery();
 
   if (!userLoaded) return <div />;
 

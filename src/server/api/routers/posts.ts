@@ -67,6 +67,40 @@ export const postsRouter = createTRPCRouter({
     return addAuthorDataToPosts(posts);
   }),
 
+  getAllInfinite: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(50).default(10),
+        // cursor is a unique reference to the last item in the previous batch in my case it's the id of the last item
+        cursor: z.string().nullish(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { limit, cursor } = input;
+      const posts = await ctx.prisma.post.findMany({
+        take: limit + 1,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: [{ createdAt: "desc" }, { id: "asc" }],
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (posts.length > limit) {
+        const lastItem = posts.pop();
+        if (!lastItem) {
+          throw new Error(
+            "Unexpected error: lastItem is undefined, check if database has any posts"
+          );
+        }
+        nextCursor = lastItem.id;
+      }
+
+      const postsWithAuthorData = await addAuthorDataToPosts(posts);
+      return {
+        postsWithAuthorData,
+        nextCursor,
+      };
+    }),
+
   getPostsByAuthorId: publicProcedure
     .input(z.object({ authorId: z.string() }))
     .query(async ({ ctx, input }) => {
