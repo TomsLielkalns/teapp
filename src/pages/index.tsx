@@ -81,7 +81,22 @@ const CreatePost = () => {
 };
 
 const Feed = () => {
-  const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
+  const {
+    data,
+    isLoading: postsLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = api.posts.getAllInfinite.useInfiniteQuery(
+    {
+      limit: 5,
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      // initialCursor: 1, // <-- optional you can pass an initialCursor
+    }
+  );
+
   if (postsLoading)
     return (
       <div className="flex grow">
@@ -89,19 +104,36 @@ const Feed = () => {
       </div>
     );
   if (!data) return <div>Failed to load data</div>;
+
   return (
     <div className="flex grow flex-col">
-      {data.map((postWithAuthor) => (
-        <PostView {...postWithAuthor} key={postWithAuthor.post.id} />
-      ))}
+      {data.pages.map((page, index) => {
+        return (
+          <div key={index}>
+            {page.postsWithAuthorData.map((postWithAuthor) => {
+              return (
+                <PostView {...postWithAuthor} key={postWithAuthor.post.id} />
+              );
+            })}
+          </div>
+        );
+      })}
+      {hasNextPage && (
+        <button
+          onClick={() => fetchNextPage()}
+          disabled={isFetchingNextPage}
+          className="flex items-center justify-center"
+        >
+          {" "}
+          Fetch more data{" "}
+        </button>
+      )}
     </div>
   );
 };
 
 const Home = () => {
   const { isLoaded: userLoaded, isSignedIn } = useUser();
-  // start fetching asap
-  api.posts.getAll.useQuery();
 
   if (!userLoaded) return <div />;
 
