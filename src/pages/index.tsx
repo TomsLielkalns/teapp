@@ -20,7 +20,7 @@ const CreatePost = () => {
   const ctx = api.useContext();
   const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
     onSuccess: () => {
-      void ctx.posts.getAll.invalidate();
+      void ctx.posts.getAllInfinite.invalidate();
     },
     onError: (err) => {
       const errorMessage = err.data?.zodError?.fieldErrors?.content?.[0];
