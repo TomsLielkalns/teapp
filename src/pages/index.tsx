@@ -47,6 +47,7 @@ const CreatePost = () => {
           className="h-14 w-14 rounded-full"
           width={56}
           height={56}
+          priority
         />
         <form
           className="flex grow items-center"
@@ -60,12 +61,6 @@ const CreatePost = () => {
             id="postContent"
             autoComplete="off"
             disabled={isPosting}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleSubmit(onSubmitPost);
-              }
-            }}
           />
           {formState.isValid && !isPosting && (
             <button onClick={() => handleSubmit(onSubmitPost)}>Post</button>
@@ -106,7 +101,7 @@ const Feed = () => {
       if (node && IntersectionObserver) {
         const observer = new IntersectionObserver(
           ([entry]) => {
-            if (entry && entry.isIntersecting) {
+            if (entry?.isIntersecting) {
               void fetchNextPage();
             }
           },
@@ -129,11 +124,20 @@ const Feed = () => {
     );
   if (!data) return <div>Failed to load data</div>;
 
+  let buttonText;
+  if (isFetchingNextPage) {
+    buttonText = "Loading more...";
+  } else if (hasNextPage) {
+    buttonText = "Load More";
+  } else {
+    buttonText = "Nothing more to load";
+  }
+
   return (
     <div className="flex grow flex-col">
-      {data.pages.map((page, index) => {
+      {data.pages.map((page) => {
         return (
-          <div key={index}>
+          <div key={page.nextCursor ?? "last data"}>
             {page.postsWithAuthorData.map((postWithAuthor) => {
               return (
                 <PostView {...postWithAuthor} key={postWithAuthor.post.id} />
@@ -149,11 +153,7 @@ const Feed = () => {
           disabled={isFetchingNextPage || !hasNextPage}
           className="flex items-center justify-center"
         >
-          {isFetchingNextPage
-            ? "Loading more..."
-            : hasNextPage
-            ? "Load More"
-            : "Nothing more to load"}
+          {buttonText}
         </button>
       )}
     </div>
