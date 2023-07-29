@@ -1,5 +1,5 @@
 import { api } from "~/utils/api";
-import { SignOutButton, SignInButton, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import { LoadingPage, LoadingSpinner } from "~/components/LoadingSpinner";
 import { toast } from "react-hot-toast";
@@ -55,7 +55,7 @@ const CreatePost = () => {
         >
           <input
             {...register("postContent", { required: true })}
-            placeholder="Write something."
+            placeholder="Write something..."
             className="grow bg-transparent outline-none"
             type="text"
             id="postContent"
@@ -168,14 +168,9 @@ const Home = () => {
   return (
     <>
       <PageLayout>
-        <div className="flex justify-between border-b border-slate-300 p-4">
-          {!isSignedIn && <SignInButton />}
-          {isSignedIn && (
-            <>
-              <CreatePost />
-              <SignOutButton />
-            </>
-          )}
+        <div className="flex justify-center border-b border-slate-300 p-4">
+          {isSignedIn && <CreatePost />}
+          {!isSignedIn && <div>Sign in to post!</div>}
         </div>
         <Feed />
       </PageLayout>
