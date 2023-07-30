@@ -48,7 +48,7 @@ const ProfilePage = (props: { userId: string }) => {
             alt={`${data.username}'s profile image`}
             width={150}
             height={150}
-            className="absolute bottom-0 left-0 -mb-[75px] ml-4 rounded-full border-4 border-black"
+            className="absolute bottom-0 left-0 -mb-[75px] ml-4 rounded-full border-4 border-white"
           />
         </div>
         <div className="h-[75px]" />

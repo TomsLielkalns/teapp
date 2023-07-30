@@ -171,7 +171,7 @@ const Home = () => {
       <PageLayout>
         <div className="flex justify-center border-b border-slate-300 p-4 pt-1">
           {isSignedIn && <CreatePost />}
-          {!isSignedIn && <div>Sign in to post!</div>}
+          {!isSignedIn && <div className="mt-20">Sign in to post!</div>}
         </div>
         <Feed />
       </PageLayout>
