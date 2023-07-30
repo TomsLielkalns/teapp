@@ -7,8 +7,8 @@ const NavBar = () => {
   if (!userLoaded) return <div />;
 
   return (
-    <>
-      <nav className="sticky left-0 top-0 z-20 w-full border-b border-gray-200 bg-transparent  backdrop-blur-sm dark:border-gray-600">
+    <div className="h-0">
+      <nav className="sticky left-0 top-0 z-20 w-full border-b border-gray-200 bg-transparent backdrop-blur-sm dark:border-gray-600">
         <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between p-4">
           <Link href="/" className="flex items-center">
             <span className="self-center whitespace-nowrap text-2xl font-semibold dark:text-white">
@@ -26,7 +26,7 @@ const NavBar = () => {
           </div>
         </div>
       </nav>
-    </>
+    </div>
   );
 };
 
@@ -36,7 +36,7 @@ export const PageLayout = (props: PropsWithChildren) => {
     <>
       <NavBar />
       <main className="flex justify-center">
-        <div className="no-scrollbar h-screen w-full overflow-y-scroll border-x border-slate-300 bg-gray-800 drop-shadow-2xl md:max-w-2xl">
+        <div className="no-scrollbar h-screen w-full overflow-y-scroll border-x border-slate-300 bg-gray-800 bg-gradient-to-r from-pink-950 to-slate-800 drop-shadow-2xl md:max-w-2xl">
           {children}
         </div>
       </main>

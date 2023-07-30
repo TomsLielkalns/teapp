@@ -17,7 +17,9 @@ const SinglePostPage = (props: { id: string }) => {
         <title>{`${data.post.content} - @${data.author.username}`}</title>
       </Head>
       <PageLayout>
-        <PostView {...data} />
+        <div className="mt-20">
+          <PostView {...data} />
+        </div>
       </PageLayout>
     </>
   );

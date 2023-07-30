@@ -40,7 +40,7 @@ const CreatePost = () => {
 
   return (
     <>
-      <div className="flex w-full gap-4">
+      <div className="mt-20 flex w-full gap-4">
         <Image
           src={user.profileImageUrl}
           alt="Profile image"
@@ -89,6 +89,7 @@ const Feed = () => {
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
+      refetchOnWindowFocus: false,
       // initialCursor: 1, // <-- optional you can pass an initialCursor
     }
   );
@@ -168,7 +169,7 @@ const Home = () => {
   return (
     <>
       <PageLayout>
-        <div className="flex justify-center border-b border-slate-300 p-4">
+        <div className="flex justify-center border-b border-slate-300 p-4 pt-1">
           {isSignedIn && <CreatePost />}
           {!isSignedIn && <div>Sign in to post!</div>}
         </div>
