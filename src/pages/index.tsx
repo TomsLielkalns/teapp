@@ -7,6 +7,7 @@ import { PageLayout } from "~/components/Layout";
 import { PostView } from "~/components/PostView";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { useCallback } from "react";
+import Scene from "~/components/three/Scene";
 
 type PostFormValues = {
   postContent: string;
@@ -169,6 +170,7 @@ const Home = () => {
   return (
     <>
       <PageLayout>
+        <Scene />
         <div className="flex justify-center border-b border-slate-300 p-4 pt-1">
           {isSignedIn && <CreatePost />}
           {!isSignedIn && (
